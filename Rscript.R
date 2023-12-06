@@ -81,7 +81,7 @@ for (i in 1:nrow(data)) {
     # Add the new row with NA values to the dataframe
     new_df <- rbind(new_df, new_row)
   }
-  Sys.sleep(0.3) # Pause to avoid being kicked by the API
+  Sys.sleep(0.16) # Pause to avoid being kicked by the API
 }
 
 # Append the data in the main data <- data_frame # nolint: line_length_linter.
@@ -90,20 +90,10 @@ data <- cbind(data, new_df)
 # Everything is in a new CSV file
 write.csv2(data, file = "./se_companies_updated.csv", row.names = FALSE)
 
-# when
+
 # Convert creation_dates to Date format
-new_df$creation_dates <- as.Date(new_df$creation_dates, format = "%Y-%m-%d")
-
-ggplot(new_df, aes(x=creation_dates)) +  
-  geom_histogram(binwidth=1, fill="blue",color="black", stat = "identity") +
-  labs(x="Date of creation")
-
-# Histogram of 
-ggplot(new_df, mapping = aes(creation_dates)) +
-  geom_histogram(color = "black", fill = "blue") + # nolint
-  labs(title = "Histogram of Creation Dates", x = "Creation Dates") # nolint
-
-
+cleaned_data <- new_df %>%
+  filter(!is.na(creation_dates) & creation_dates != "Not_found")
 
 # Plot about the categories of company
 table_categories <- table(new_df$categorie_entreprise)
