@@ -1,0 +1,110 @@
+---
+title: "BQFFSR - Final project"
+author: "Romain ROCHAS"
+date: "13/12/2023"
+format: 
+  html
+---
+
+## Some information about the dataset:
+
+found in this [website](https://www.ess-france.org/)
+
+The dataset length: 1000 *(or 500 rows depending on the dataset)* containing only **Social enterprises from France**
+
+The dataset contains the following collumns:
+- `ID`: Unique identifier for each entry.
+
+- `SIREN`: Identification number for organizations.
+
+- `Organization_name`: Name of the organization.
+
+- `Type_of_org`: Type or category of the organization.
+
+- `zip_code`: Zip code of the organization's location.
+
+- `City`: City where the organization is located.
+
+- `Department_code`: Code representing the department.
+
+- `Department_name`: Name of the department.
+
+- `Region`: Region where the department belongs
+
+- `categorie_entreprise`: Enterprise category in the french categories
+
+- `principal_activity`: Activity in which the enterprises is register primarly
+
+- `employees_nb`: Number of employees (declared at one point)
+
+- `etablissements`: Number of adress that they are registered on
+
+- `department`: ...
+
+- `creation_date`: Date of creation of the enterprise
+
+- `juridical_nature`: Under french/european laws
+
+- `is_sse`: French label for Social and Solidarity Economy [See more](https://www.economie.gouv.fr/cedef/economie-sociale-et-solidaire#:~:text=Le%20concept%20d'%C3%A9conomie%20sociale,solidarit%C3%A9%20et%20d'utilit%C3%A9%20sociale)
+
+- `is_mission_driven`: Label given to mission_driven companies [See more](https://www.economie.gouv.fr/cedef/societe-mission)
+
+
+```{r echo=FALSE}
+library(ggplot2)
+library(dplyr)
+library(knitr)
+
+dataset <- read.csv2(file = "./se_companies_updated.csv", header = TRUE)
+
+# Count number of companies per city
+count_per_city <- dataset %>%
+  group_by(City) %>%
+  summarise(Count = n()) %>%
+  arrange(desc(Count)) # Filter in desc mode.
+
+# Top 10 cities in a table/data frame format.
+top_10_cities <- head(count_per_city, 10)
+
+# 10 biggest cities in the table .html format
+kable(top_10_cities)
+```
+These number are to be linked to the length of the dataset, results can differ.
+
+##### A summary of the informations:
+```{r echo=FALSE, warning=FALSE}
+dataset$employees_nb <- as.numeric(dataset$employees_nb)
+dataset$etablissements <- as.numeric(dataset$etablissements)
+
+sum_stats <- summary(dataset[c("employees_nb", "etablissements")], na.rm = TRUE)
+
+kable(sum_stats)
+```
+This table shows different indicators about the dataset, considering employees number and adress of companies.
+
+##### Visualise the employees count:
+```{r echo=FALSE, warning=FALSE}
+# Histogram to visualize the distribution of employee counts
+ggplot(dataset, aes(x = categorie_entreprise, y = employees_nb, fill = categorie_entreprise)) +
+  geom_boxplot(outlier.size = 6) +
+  labs(title = "Distribution of Employee Counts by Enterprise Category", x = "Enterprise Category", y = "Employee Count")
+
+```
+Might give a single color plot, the dataset is almost 200k lines, the enterprise categories are not only PME in the full dataset.
+
+##### Employees count and companies Establishments
+```{r echo=FALSE, warning=FALSE}
+ggplot(dataset, aes(x = employees_nb, y = etablissements)) +
+  geom_point(color = "red", size = 8) +
+  labs(title = "Relationship between Employee Count and Establishments", x = "Employee Count", y = "Number of Establishments")
+```
+The biggest companies in term of number are not the one who have the most establishments.
+
+##### Categories of Companies by Enterprise Category
+```{r echo=FALSE, warning=FALSE}
+ggplot(dataset, aes(x = Type_of_org, fill = categorie_entreprise)) +
+  geom_bar(position = "stack") +
+  labs(title = "Categories of Companies by Enterprise Category", x = "Company Type", y = "Frequency")
+
+```
+We can see that associations are mainly not in the api's database, the french ministery of finance has an other api just for associations that could be used to complete these lack of data.

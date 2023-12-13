@@ -7,9 +7,9 @@ library(ggplot2)
 
 
 # Import the data from the CSV file
-data <- read.csv2(file = "./se_companies_1000.csv", header = TRUE)
+# data <- read.csv2(file = "./se_companies_1000.csv", header = TRUE)
 # 500 fetch of companies (less data)
-# data <- read.csv2(file = "./se_companies_500.csv", header = TRUE)
+data <- read.csv2(file = "./se_companies_500.csv", header = TRUE)
 # 200 000 + rows to fetch (around 13 hours, no recommended...)
 # data <- read.csv2(file = "./se_companies.csv", header = TRUE)
 
@@ -35,10 +35,10 @@ get_info <- function(siren) {
 }
 
 for (i in 1:nrow(data)) {
-  fetch <- get_info(data$SIREN[i])
   sprintf("Current fetch: %d", data$ID[i])
+  fetch <- get_info(data$SIREN[i])
   # Check if fetch$total_results has non-zero length
-  if (fetch$total_results > 0) {
+  if (fetch$total_results > 0 ) {
     # Extract relevant information from the API response
     response <- fetch$results
 
@@ -111,11 +111,3 @@ data <- cbind(data, new_df)
 
 # Everything is in a new CSV file
 write.csv2(data, file = "./se_companies_updated.csv", row.names = FALSE)
-
-# Convert creation_dates to Date format
-cleaned_data <- new_df %>%
-  filter(!is.na(creation_dates) & creation_dates != "Not_found")
-
-# Plot about the categories of company
-table_categories <- table(data$categorie_entreprise)
-barplot(table_categories, main = "Company Categories", xlab = "Category", ylab = "Frequency")
