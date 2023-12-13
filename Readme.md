@@ -5,12 +5,12 @@ To run this project you have to:
 
 ## Requirements
 The list of R packages needed are the following:
-  - *Dyplr*
-  - *Tydiverse*
-  - *httr*
-  - *jsonlite*
-  - *ggplot2*
-  - *knitr*
+  - **Dyplr**
+  - **Tydiverse**
+  - **httr**
+  - **jsonlite**
+  - **ggplot2**
+  - **knitr**
 
 Be sure to install them by using `install.packages(the_library)`
 
